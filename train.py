@@ -95,6 +95,7 @@ metrics = pd.DataFrame({
     'val_loss': [val_loss1, val_loss2],
     'val_acc': [val_acc1, val_acc2]
 })
+
 metrics.to_csv('metrics.csv', index=False)
 
 # Select the best model
