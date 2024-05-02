@@ -1,0 +1,12 @@
+stages:
+  train:
+    cmd: python train.py
+    deps:
+      - train.py
+      - requirements.txt
+    outs:
+      - model.keras
+    metrics:
+      - metrics.json
+    plots:
+      - confusion_matrix.png
