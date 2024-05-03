@@ -152,7 +152,7 @@ mlflow.end_run()
 os.system('dvc add model.keras')
 os.system('git add model.keras.dvc .gitignore')
 os.system('dvc push -r origin')
-os.system('git commit -m "DVC file"')
+os.system('git commit -m "DVC file [skip ci]"')
 os.system('git push origin master')
 
 print("\033[32m", "Run finished successfully.", "\033[0m")
