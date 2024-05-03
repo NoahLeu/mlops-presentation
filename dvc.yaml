@@ -4,12 +4,12 @@ stages:
     deps:
       - train.py
       - requirements.txt
-    outs:
-      - model.keras
     metrics:
-      - metrics.json
+      - metrics/metrics.json:
+        cache: false
     plots:
-      - metrics.csv
+      - metrics/metrics.csv:
+        cache: false
     # plots:
     #   - metrics.csv:
     #       y: [val_loss, val_acc]
