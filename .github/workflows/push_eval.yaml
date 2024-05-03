@@ -1,8 +1,5 @@
 name: CML & DVC
-on:
-  pull_request:
-    branches:
-      - master
+on: [push]
 
 jobs:
   train-and-report:
@@ -34,4 +31,4 @@ jobs:
           echo "## Plots" >> report.md
           dvc plots diff master  >> report.md
           echo "![Confusion Matrix](./metrics/confusion_matrix.png)" >> report.md
-          cml comment create --pr --publish report.md
+          cml pr create "**/*.json" "**/*.py" "**/*.csv" "**/*.png" --md >> report.md
