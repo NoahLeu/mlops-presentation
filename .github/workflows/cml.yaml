@@ -37,6 +37,6 @@ jobs:
           echo "## Plots" >> report.md
           dvc plots diff master  >> report.md
           echo "![Confusion Matrix](./metrics/confusion_matrix.png)" >> report.md
-          cml comment create --pr --publish report.md
+          cml comment create report.md
           dvc push
           cml pr create --merge --skip-ci dvc.lock
