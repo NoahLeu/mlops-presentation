@@ -166,13 +166,9 @@ with Live() as live:
 
   mlflow.end_run()
 
-
-  # track the model file with DVC
-  os.system('dvc add model.keras')
-  os.system('git add model.keras.dvc .gitignore')
-  os.system('dvc push -r origin')
-  os.system('git config --global ' + os.environ["GIT_EMAIL"])
-  os.system('git config --global ' + os.environ["GIT_NAME"])
+  os.system('git config user.email ' + os.environ["GIT_EMAIL"])
+  os.system('git config user.name ' + os.environ["GIT_NAME"])
+  os.system('git remote set-url origin https://x-access-token:' + os.environ["REPO_TOKEN"] + '@github.com/NoahLeu/mlops-presentation.git')
   os.system('git commit -m "DVC file [skip ci]"')
   os.system('git push')
 
