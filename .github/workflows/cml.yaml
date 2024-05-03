@@ -22,16 +22,19 @@ jobs:
         env:
           DAGSHUB_ACCESS_TOKEN: ${{ secrets.DAGSHUB_ACCESS_TOKEN }}
           MLFLOW_TRACKING_PASSWORD: ${{ secrets.MLFLOW_TRACKING_PASSWORD }}
+          GIT_EMAIL: ${{ secrets.GIT_EMAIL }}
+          GIT_NAME: ${{ secrets.GIT_NAME }}
         run: |
-          pip install -r requirements.txt  # Install dependencies
-          dvc repro                        # Reproduce pipeline
+          pip install -r requirements.txt
+          dvc repro
       - name: Create CML report
         env:
           REPO_TOKEN: ${{ secrets.REPO_TOKEN }}
         run: |
           echo "## Metrics: workflow vs. master" >> report.md
           git fetch --depth=1 origin master:master
-          dvc metrics diff master >> report.md
+          dvc metrics diff master  >> report.md
           echo "## Plots" >> report.md
-          echo "### Model Metrics" >> report.md
+          dvc plots diff master  >> report.md
+          echo "![Confusion Matrix](./metrics/confusion_matrix.png)" >> report.md
           cml comment create report.md
