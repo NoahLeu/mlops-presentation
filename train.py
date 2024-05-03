@@ -12,7 +12,6 @@ import pandas as pd
 import tempfile
 import threading
 import json
-from save_model_dvc import save_model_dvc
 
 print(
   "\033[35m",
