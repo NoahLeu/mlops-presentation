@@ -10,6 +10,3 @@ stages:
       - metrics/metrics.json: { cache: false }
     plots:
       - metrics/metrics.csv: { cache: false }
-    # plots:
-    #   - metrics.csv:
-    #       y: [val_loss, val_acc]
