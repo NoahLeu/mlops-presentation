@@ -31,7 +31,7 @@ jobs:
         run: |
           echo "## Metrics: workflow vs. master" >> report.md
           git fetch --depth=1 origin master:master
-          dvc metrics diff master >> report.md
+          dvc metrics diff master --md >> report.md
           echo "## Plots" >> report.md
-          echo "### Model Metrics" >> report.md
+          dvc plots diff master --md >> report.md
           cml comment create report.md

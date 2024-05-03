@@ -8,6 +8,8 @@ stages:
       - model.keras
     metrics:
       - metrics.json
+    plots:
+      - metrics.csv
     # plots:
     #   - metrics.csv:
     #       y: [val_loss, val_acc]
