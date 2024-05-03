@@ -129,12 +129,13 @@ print("\033[35m", "Creating and saving confusion matrix...", "\033[0m")
 cm = confusion_matrix(pred_df['GT'], pred_df['Pred'])
 cm_map = ConfusionMatrixDisplay(confusion_matrix=cm)
 cm_map.plot()
+plt.savefig("confusion_matrix.png")
 
-temp_file = tempfile.NamedTemporaryFile(suffix=".png").name
-plt.savefig(temp_file)
+# temp_file = tempfile.NamedTemporaryFile(suffix=".png").name
+# plt.savefig(temp_file)
 
 # Log confusion matrix
-mlflow.log_artifact(temp_file)
+mlflow.log_artifact("confusion_matrix.png")
 
 print("\033[35m", "Logging model to MLflow...", "\033[0m")
 # Save model in MLflow format
