@@ -43,4 +43,4 @@ jobs:
           echo "![Confusion Matrix](./metrics/confusion_matrix.png)" >> report.md
           cml comment create report.md
           dvc push
-          cml pr create --merge --skip-ci dvc.lock
+          cml pr create --merge --skip-ci --title "Automated: DVC meta file update [skip ci]" dvc.lock
