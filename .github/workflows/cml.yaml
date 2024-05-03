@@ -1,5 +1,8 @@
 name: CML & DVC
 on:
+  push:
+    branches:
+      - '**'
   pull_request:
     branches:
       - master
@@ -35,3 +38,5 @@ jobs:
           dvc plots diff master  >> report.md
           echo "![Confusion Matrix](./metrics/confusion_matrix.png)" >> report.md
           cml comment create --pr --publish report.md
+          dvc push
+          cml pr create --merge --skip-ci dvc.lock
