@@ -108,12 +108,12 @@ print("\033[35m", "Saving trained model...", "\033[0m")
 
 with Live() as live:
   # Saving
-  best_model.save("model.keras")
+  best_model.save("model.h5")
 
   print("\033[35m", "Tracking model with DVC...", "\033[0m")
 
   live.log_artifact(
-      str("model.keras"),
+      str("model.h5"),
       type="model",
       name="mnist_model",
       desc="This is an example model trained on the MNIST dataset.",
