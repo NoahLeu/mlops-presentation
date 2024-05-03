@@ -20,7 +20,7 @@ jobs:
           dvc repro                        # Reproduce pipeline
       - name: Create CML report
         env:
-          REPO_TOKEN: ${{ secrets.DAGSHUB_TOKEN }}
+          REPO_TOKEN: ${{ secrets.REPO_TOKEN }}
         run: |
           echo "## Metrics: workflow vs. main" >> report.md
           git fetch --depth=1 origin main:main
