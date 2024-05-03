@@ -134,7 +134,7 @@ with Live() as live:
   cm = confusion_matrix(pred_df['GT'], pred_df['Pred'])
   cm_map = ConfusionMatrixDisplay(confusion_matrix=cm)
   cm_map.plot()
-  plt.savefig("metric/confusion_matrix.png")
+  plt.savefig("metrics/confusion_matrix.png")
 
 
   live.log_artifact(
