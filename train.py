@@ -12,8 +12,7 @@ import pandas as pd
 import tempfile
 import threading
 import json
-
-
+from save_model_dvc import save_model_dvc
 
 print(
   "\033[35m",
@@ -21,7 +20,7 @@ print(
 
   /\ "-./  \   /\ \       /\  __ \   /\  == \ /\  ___\
   \ \ \-./\ \  \ \ \____  \ \ \/\ \  \ \  _-/ \ \___  \
-   \ \_\ \ \_\  \ \_____\  \ \_____\  \ \_\    \/\_____\
+  \ \_\ \ \_\  \ \_____\  \ \_____\  \ \_\    \/\_____\
     \/_/  \/_/   \/_____/   \/_____/   \/_/     \/_____/
   ________________________________________________________
   --------------------------------------------------------
@@ -110,7 +109,7 @@ print("\033[35m", "Saving trained model...", "\033[0m")
 # Saving
 best_model.save("model.keras")
 
-print("\033[35m", "Tracking model with DVC...", "\033[0m")
+save_model_dvc()
 
 # track the model file with DVC
 # os.system('dvc add model.keras')

@@ -4,6 +4,8 @@ stages:
     deps:
       - train.py
       - requirements.txt
+    outs:
+      - model.keras
     metrics:
       - metrics/metrics.json: { cache: false }
     plots:
