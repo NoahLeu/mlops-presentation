@@ -2,14 +2,26 @@ stages:
   train:
     cmd: python train.py
     deps:
-      - train.py
-      - requirements.txt
+    - train.py
+    - requirements.txt
     outs:
-      - model.keras
+    - model.h5
     metrics:
-      - metrics/metrics.json: { cache: false }
+    - metrics/metrics.json: {cache: false}
     plots:
-      - metrics/metrics.csv: { cache: false }
-    # plots:
-    #   - metrics.csv:
-    #       y: [val_loss, val_acc]
+    - metrics/metrics.csv: {cache: false}
+artifacts:
+  mnist_model:
+    path: model.h5
+    type: model
+    desc: This is an example model trained on the MNIST dataset.
+    labels:
+    - mnist
+    - model
+  confusion_matrix:
+    path: metrics/confusion_matrix.png
+    type: confusion_matrix
+    desc: Confusion matrix for the best model.
+    labels:
+    - mnist
+    - confusion_matrix

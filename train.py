@@ -108,12 +108,12 @@ print("\033[35m", "Saving trained model...", "\033[0m")
 
 with Live() as live:
   # Saving
-  best_model.save("model.keras")
+  best_model.save("model.h5")
 
   print("\033[35m", "Tracking model with DVC...", "\033[0m")
 
   live.log_artifact(
-      str("model.keras"),
+      str("model.h5"),
       type="model",
       name="mnist_model",
       desc="This is an example model trained on the MNIST dataset.",
@@ -166,9 +166,9 @@ with Live() as live:
 
   mlflow.end_run()
 
+  os.system('git remote set-url origin https://x-access-token:' + os.environ["REPO_TOKEN"] + '@github.com/NoahLeu/mlops-presentation.git')
   os.system('git config user.email ' + os.environ["GIT_EMAIL"])
   os.system('git config user.name ' + os.environ["GIT_NAME"])
-  os.system('git remote set-url origin https://x-access-token:' + os.environ["REPO_TOKEN"] + '@github.com/NoahLeu/mlops-presentation.git')
   os.system('git commit -m "DVC file [skip ci]"')
   os.system('git push')
 
