@@ -27,9 +27,4 @@ jobs:
           dvc metrics diff master >> report.md
           echo "## Plots" >> report.md
           echo "### Model Metrics" >> report.md
-          dvc plots diff \
-            --target metrics.csv \
-            --show-vega master > vega.json
-          vl2png vega.json -s 1.5 > plot.png
-          echo '![](./plot.png "Model Metrics")' >> report.md
           cml comment create report.md

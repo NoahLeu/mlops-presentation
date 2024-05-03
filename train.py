@@ -11,6 +11,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import tempfile
 import threading
+import json
 
 
 print(
@@ -129,13 +130,21 @@ print("\033[35m", "Creating and saving confusion matrix...", "\033[0m")
 cm = confusion_matrix(pred_df['GT'], pred_df['Pred'])
 cm_map = ConfusionMatrixDisplay(confusion_matrix=cm)
 cm_map.plot()
-plt.savefig("confusion_matrix.png")
 
-# temp_file = tempfile.NamedTemporaryFile(suffix=".png").name
-# plt.savefig(temp_file)
+temp_file = tempfile.NamedTemporaryFile(suffix=".png").name
+plt.savefig(temp_file)
 
 # Log confusion matrix
-mlflow.log_artifact("confusion_matrix.png")
+mlflow.log_artifact(temp_file, "confusion_matrix.png")
+
+# Log metrics metrics.json
+metrics = {
+    "accuracy": val_acc1,
+    "loss": val_loss1
+}
+
+with open("metrics.json", "w") as f:
+    json.dump(metrics, f)
 
 print("\033[35m", "Logging model to MLflow...", "\033[0m")
 # Save model in MLflow format
