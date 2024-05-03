@@ -111,11 +111,6 @@ best_model.save("model.keras")
 
 save_model_dvc()
 
-# track the model file with DVC
-# os.system('dvc add model.keras')
-# os.system('git add model.keras.dvc .gitignore')
-# os.system('dvc push -r origin')
-
 print("\033[35m", "Logging metrics and evaluating model...", "\033[0m")
 
 # Log metrics
@@ -151,5 +146,13 @@ print("\033[35m", "Logging model to MLflow...", "\033[0m")
 mlflow.tensorflow.log_model(best_model, "model")
 
 mlflow.end_run()
+
+
+# track the model file with DVC
+os.system('dvc add model.keras')
+os.system('git add model.keras.dvc .gitignore')
+os.system('dvc push -r origin')
+os.system('git commit -m "DVC file"')
+os.system('git push origin master')
 
 print("\033[32m", "Run finished successfully.", "\033[0m")
