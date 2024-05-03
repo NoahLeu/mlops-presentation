@@ -97,7 +97,7 @@ metrics = pd.DataFrame({
     'val_acc': [val_acc1, val_acc2]
 })
 
-metrics.to_csv('metrics.csv', index=False)
+metrics.to_csv('metrics/metrics.csv', index=False)
 
 # Select the best model
 best_model = model1 if val_acc1 > val_acc2 else model2
@@ -144,7 +144,7 @@ metrics = {
     "loss": val_loss1
 }
 
-with open("metrics.json", "w") as f:
+with open("metrics/metrics.json", "w") as f:
     json.dump(metrics, f)
 
 print("\033[35m", "Logging model to MLflow...", "\033[0m")
