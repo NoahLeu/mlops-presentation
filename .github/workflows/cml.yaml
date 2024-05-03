@@ -24,6 +24,7 @@ jobs:
           MLFLOW_TRACKING_PASSWORD: ${{ secrets.MLFLOW_TRACKING_PASSWORD }}
           GIT_EMAIL: ${{ secrets.GIT_EMAIL }}
           GIT_NAME: ${{ secrets.GIT_NAME }}
+          REPO_TOKEN: ${{ secrets.REPO_TOKEN }}
         run: |
           pip install -r requirements.txt
           dvc repro
