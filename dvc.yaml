@@ -7,6 +7,6 @@ stages:
     outs:
       - model.keras
     metrics:
-      - metrics.json
+      - metrics.csv
     plots:
       - confusion_matrix.png
