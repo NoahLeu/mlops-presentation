@@ -106,53 +106,72 @@ print("\033[35m", "Best model: " + best_model_name, "\033[0m")
 
 print("\033[35m", "Saving trained model...", "\033[0m")
 
-# Saving
-best_model.save("model.keras")
+with Live() as live:
+  # Saving
+  best_model.save("model.keras")
 
-save_model_dvc()
+  print("\033[35m", "Tracking model with DVC...", "\033[0m")
 
-print("\033[35m", "Logging metrics and evaluating model...", "\033[0m")
+  live.log_artifact(
+      str("model.keras"),
+      type="model",
+      name="mnist_model",
+      desc="This is an example model trained on the MNIST dataset.",
+      labels=["cv", "mnist", "model", "dvc", "keras"]
+  )
 
-# Log metrics
-pred_y = best_model.predict(x_test)
-pred_df = pd.DataFrame(pred_y, columns=[i for i in range(10)])
-pred_df['Pred'] = pred_df.idxmax(axis=1)
-pred_df['GT'] = y_test
+  print("\033[35m", "Logging metrics and evaluating model...", "\033[0m")
 
-print("\033[35m", "Creating and saving confusion matrix...", "\033[0m")
+  # Log metrics
+  pred_y = best_model.predict(x_test)
+  pred_df = pd.DataFrame(pred_y, columns=[i for i in range(10)])
+  pred_df['Pred'] = pred_df.idxmax(axis=1)
+  pred_df['GT'] = y_test
 
-# Confusion matrix plot
-cm = confusion_matrix(pred_df['GT'], pred_df['Pred'])
-cm_map = ConfusionMatrixDisplay(confusion_matrix=cm)
-cm_map.plot()
+  print("\033[35m", "Creating and saving confusion matrix...", "\033[0m")
 
-temp_file = tempfile.NamedTemporaryFile(suffix=".png").name
-plt.savefig(temp_file)
-
-# Log confusion matrix
-mlflow.log_artifact(temp_file, "confusion_matrix.png")
-
-# Log metrics metrics.json
-metrics = {
-    "accuracy": val_acc1,
-    "loss": val_loss1
-}
-
-with open("metrics/metrics.json", "w") as f:
-    json.dump(metrics, f)
-
-print("\033[35m", "Logging model to MLflow...", "\033[0m")
-# Save model in MLflow format
-mlflow.tensorflow.log_model(best_model, "model")
-
-mlflow.end_run()
+  # Confusion matrix plot
+  cm = confusion_matrix(pred_df['GT'], pred_df['Pred'])
+  cm_map = ConfusionMatrixDisplay(confusion_matrix=cm)
+  cm_map.plot()
+  plt.savefig("metric/confusion_matrix.png")
 
 
-# track the model file with DVC
-os.system('dvc add model.keras')
-os.system('git add model.keras.dvc .gitignore')
-os.system('dvc push -r origin')
-os.system('git commit -m "DVC file [skip ci]"')
-os.system('git push origin master')
+  live.log_artifact(
+    str("metrics/confusion_matrix.png"),
+    type="confusion_matrix",
+    name="confusion_matrix",
+    desc="Confusion matrix for the best model.",
+    labels=["cv", "mnist", "confusion_matrix", "keras"]
+  )
 
-print("\033[32m", "Run finished successfully.", "\033[0m")
+  # Log confusion matrix
+  mlflow.log_artifact(
+    "metrics/confusion_matrix.png",
+    "confusion_matrix.png"
+  )
+
+  # Log metrics metrics.json
+  metrics = {
+      "accuracy": val_acc1,
+      "loss": val_loss1
+  }
+
+  with open("metrics/metrics.json", "w") as f:
+      json.dump(metrics, f)
+
+  print("\033[35m", "Logging model to MLflow...", "\033[0m")
+  # Save model in MLflow format
+  mlflow.tensorflow.log_model(best_model, "model")
+
+  mlflow.end_run()
+
+
+  # track the model file with DVC
+  os.system('dvc add model.keras')
+  os.system('git add model.keras.dvc .gitignore')
+  os.system('dvc push -r origin')
+  os.system('git commit -m "DVC file [skip ci]"')
+  os.system('git push origin master')
+
+  print("\033[32m", "Run finished successfully.", "\033[0m")
