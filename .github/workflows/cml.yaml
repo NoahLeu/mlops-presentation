@@ -32,7 +32,7 @@ jobs:
           REPO_TOKEN: ${{ secrets.REPO_TOKEN }}
         run: |
           echo "## Metrics: workflow vs. master" >> report.md
-          git fetch --depth=1 origin master:master
+          git fetch --prune --unshallow
           dvc metrics diff master  >> report.md
           echo "## Plots" >> report.md
           dvc plots diff master  >> report.md
