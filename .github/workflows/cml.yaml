@@ -1,5 +1,12 @@
 name: CML & DVC
-on: [push]
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+
 jobs:
   train-and-report:
     runs-on: ubuntu-latest
@@ -22,8 +29,8 @@ jobs:
         env:
           REPO_TOKEN: ${{ secrets.REPO_TOKEN }}
         run: |
-          echo "## Metrics: workflow vs. main" >> report.md
-          git fetch --depth=1 origin main:main
+          echo "## Metrics: workflow vs. master" >> report.md
+          git fetch --depth=1 origin master:master
           dvc metrics diff master >> report.md
           echo "## Plots" >> report.md
           echo "### Model Metrics" >> report.md
