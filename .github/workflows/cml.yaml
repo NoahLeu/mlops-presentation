@@ -22,6 +22,8 @@ jobs:
         env:
           DAGSHUB_ACCESS_TOKEN: ${{ secrets.DAGSHUB_ACCESS_TOKEN }}
           MLFLOW_TRACKING_PASSWORD: ${{ secrets.MLFLOW_TRACKING_PASSWORD }}
+          GIT_EMAIL: ${{ secrets.GIT_EMAIL }}
+          GIT_NAME: ${{ secrets.GIT_NAME }}
         run: |
           pip install -r requirements.txt
           dvc repro

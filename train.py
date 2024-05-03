@@ -171,7 +171,9 @@ with Live() as live:
   os.system('dvc add model.keras')
   os.system('git add model.keras.dvc .gitignore')
   os.system('dvc push -r origin')
+  os.system('git config --global ' + os.environ["GIT_EMAIL"])
+  os.system('git config --global ' + os.environ["GIT_NAME"])
   os.system('git commit -m "DVC file [skip ci]"')
-  os.system('git push origin master')
+  os.system('git push')
 
   print("\033[32m", "Run finished successfully.", "\033[0m")
