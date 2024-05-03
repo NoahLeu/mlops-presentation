@@ -166,9 +166,9 @@ with Live() as live:
 
   mlflow.end_run()
 
-  # os.system('git remote set-url origin https://x-access-token:' + os.environ["REPO_TOKEN"] + '@github.com/NoahLeu/mlops-presentation.git')
-  # os.system('git config user.email ' + os.environ["GIT_EMAIL"])
-  # os.system('git config user.name ' + os.environ["GIT_NAME"])
+  os.system('git remote set-url origin https://x-access-token:' + os.environ["REPO_TOKEN"] + '@github.com/NoahLeu/mlops-presentation.git')
+  os.system('git config user.email ' + os.environ["GIT_EMAIL"])
+  os.system('git config user.name ' + os.environ["GIT_NAME"])
   os.system('git add .')
   os.system('git commit -m "DVC file [skip ci]"')
   os.system('git push')
