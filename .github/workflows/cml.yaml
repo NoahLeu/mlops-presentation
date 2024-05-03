@@ -27,6 +27,10 @@ jobs:
         run: |
           pip install -r requirements.txt
           dvc repro
+      - name: Configure DVC remote
+        run: |
+          dvc remote modify origin access_key_id ${{ secrets.DVC_ACCESS_KEY_ID }}
+          dvc remote modify origin secret_access_key ${{ secrets.DVC_SECRET_ACCESS_KEY }}
       - name: Create CML report
         env:
           REPO_TOKEN: ${{ secrets.REPO_TOKEN }}
@@ -38,9 +42,5 @@ jobs:
           dvc plots diff master  >> report.md
           echo "![Confusion Matrix](./metrics/confusion_matrix.png)" >> report.md
           cml comment create report.md
-
           dvc push
-
-          echo "here"
-
           cml pr create --merge --skip-ci dvc.lock
