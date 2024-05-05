@@ -9,11 +9,11 @@ from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay
 from sklearn.model_selection import train_test_split
 import matplotlib.pyplot as plt
 import pandas as pd
-import tempfile
 import multiprocessing as mp
 import json
-from dvclive import Live
 from return_thread import ReturnValueThread
+from mlflow.tracking import MlflowClient
+from multiprocessing.pool import ThreadPool
 
 print(
   "\033[35m",
@@ -74,7 +74,9 @@ print("\033[35m", "Training model...", "\033[0m")
 
 # Define a function to train a model
 def train_model(id, model, x_train, y_train, epochs, batch_size, x_val, y_val, out_val_loss, out_val_acc):
-  with mlflow.start_run(nested=True, run_name="train_model_" + str(id)):
+  run = client.create_run(experiment.experiment_id)
+  # with mlflow.start_run(nested=True, run_name="train_model_" + str(id)):
+  with mlflow.run(run_id=run.info.run_id):
     model.fit(x_train, y_train, epochs=epochs, batch_size=batch_size, validation_split=0.2)
     val_loss, val_acc = model.evaluate(x_val, y_val)
 
@@ -87,16 +89,28 @@ out_val_acc1 = mp.Value('d', 0.0)
 out_val_loss2 = mp.Value('d', 0.0)
 out_val_acc2 = mp.Value('d', 0.0)
 
-# train and evaluate models in parallel
-thread1 = ReturnValueThread(target=train_model, args=(1, model1, x_train, y_train, 5, 50, x_val, y_val, out_val_loss1, out_val_acc1))
-thread2 = ReturnValueThread(target=train_model, args=(2, model2, x_train, y_train, 5, 50, x_val, y_val, out_val_loss2, out_val_acc2))
-threads = [thread1, thread2]
+client = MlflowClient()
 
-for thread in threads:
-  thread.start()
+new_experiment = mlflow.create_experiment("MNIST")
+experiment = mlflow.get_experiment_by_name(name='/path/to/new/experiment')
+pool = ThreadPool(processes = 2)
+runs = [
+  (1, model1, x_train, y_train, 5, 50, x_val, y_val, out_val_loss1, out_val_acc1),
+  (2, model2, x_train, y_train, 5, 50, x_val, y_val, out_val_loss2, out_val_acc2)
+]
+pool.map(lambda run:train_model(run), runs)
 
-for thread in threads:
-  thread.join()
+
+# # train and evaluate models in parallel
+# thread1 = ReturnValueThread(target=train_model, args=(1, model1, x_train, y_train, 5, 50, x_val, y_val, out_val_loss1, out_val_acc1))
+# thread2 = ReturnValueThread(target=train_model, args=(2, model2, x_train, y_train, 5, 50, x_val, y_val, out_val_loss2, out_val_acc2))
+# threads = [thread1, thread2]
+
+# for thread in threads:
+#   thread.start()
+
+# for thread in threads:
+#   thread.join()
 
 val_loss1 = out_val_loss1.value
 val_acc1 = out_val_acc1.value
