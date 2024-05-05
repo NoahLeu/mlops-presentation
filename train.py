@@ -61,7 +61,7 @@ model2 = tf.keras.Sequential([
 
 def train_and_log(model, x_train, y_train, x_val, y_val, experiment_name):
     mlflow.set_experiment(experiment_name)
-    with mlflow.start_run():
+    with mlflow.start_run(nested=True):
         # Train the model here and log metrics with MLflow
         model.compile(optimizer='adam', loss='sparse_categorical_crossentropy', metrics=['accuracy'])
         history = model.fit(x_train, y_train, epochs=5, validation_data=(x_val, y_val))
