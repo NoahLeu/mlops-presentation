@@ -10,7 +10,6 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import multiprocessing as mp
 import json
-import multiprocessing as mp
 
 print(
   "\033[35m",
