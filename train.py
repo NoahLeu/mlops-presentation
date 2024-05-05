@@ -40,6 +40,9 @@ print("\033[35m", "Loading data...", "\033[0m")
 mnist = tf.keras.datasets.mnist
 (x_train, y_train), (x_test, y_test) = mnist.load_data()
 
+# Split data in half for faster training
+x_train, _, y_train, _ = train_test_split(x_train, y_train, test_size=0.5, random_state=42)
+
 # Split the training data for validation
 x_train, x_val, y_train, y_val = train_test_split(x_train, y_train, test_size=0.2, random_state=42)
 
@@ -48,8 +51,8 @@ print("\033[35m", "Building model...", "\033[0m")
 # Define model (very simple minimal example)
 model1 = tf.keras.Sequential([
   tf.keras.layers.Flatten(input_shape=(28, 28)),
-  tf.keras.layers.Dense(128, activation='softmax'),
-  tf.keras.layers.Dense(10, activation='relu')
+  tf.keras.layers.Dense(128, activation='relu'),
+  tf.keras.layers.Dense(10, activation='softmax')
 ])
 
 model2 = tf.keras.Sequential([
@@ -58,47 +61,30 @@ model2 = tf.keras.Sequential([
   tf.keras.layers.Dense(10, activation='softmax')
 ])
 
+# Compile model
+model1.compile(optimizer='adam',
+              loss='sparse_categorical_crossentropy',
+              metrics=['accuracy'])
+model2.compile(optimizer='adam',
+              loss='sparse_categorical_crossentropy',
+              metrics=['accuracy'])
 
-def train_and_log(model, x_train, y_train, x_val, y_val, experiment_name):
-    with mlflow.start_run(nested=True, run_name=experiment_name):
-        # Train the model here and log metrics with MLflow
-        model.compile(optimizer='adam', loss='sparse_categorical_crossentropy', metrics=['accuracy'])
-        history = model.fit(x_train, y_train, epochs=5, validation_data=(x_val, y_val))
+val_loss1, val_acc1 = 0, 0
+val_loss2, val_acc2 = 0, 0
 
-        # Log metrics with mlflow
-        for epoch in range(len(history.history['accuracy'])):
-            mlflow.log_metric('accuracy', history.history['accuracy'][epoch], step=epoch)
-            mlflow.log_metric('val_accuracy', history.history['val_accuracy'][epoch], step=epoch)
-            mlflow.log_metric('loss', history.history['loss'][epoch], step=epoch)
-            mlflow.log_metric('val_loss', history.history['val_loss'][epoch], step=epoch)
+with mlflow.start_run(nested=True, run_name="model_1") as child_run_1:
+  print ("\033[35m", "Training model 1...", "\033[0m")
+  model1.fit(x_train, y_train, epochs=3, validation_data=(x_val, y_val))
+  print ("\033[35m", "Evaluating model 1...", "\033[0m")
+  val_loss1, val_acc1 = model1.evaluate(x_val, y_val)
 
-        # save evaluation metrics
-        val_loss, val_acc = model.evaluate(x_val, y_val)
-        if experiment_name == "model_1":
-            out_val_loss1.value = val_loss
-            out_val_acc1.value = val_acc
-        else:
-            out_val_loss2.value = val_loss
-            out_val_acc2.value = val_acc
+with mlflow.start_run(nested=True, run_name="model_2") as child_run_2:
+  print ("\033[35m", "Training model 2...", "\033[0m")
+  model2.fit(x_train, y_train, epochs=3, validation_data=(x_val, y_val))
+  print ("\033[35m", "Evaluating model 2...", "\033[0m")
+  val_loss2, val_acc2 = model2.evaluate(x_val, y_val)
 
-out_val_loss1 = mp.Value('d', 0.0)
-out_val_acc1 = mp.Value('d', 0.0)
-out_val_loss2 = mp.Value('d', 0.0)
-out_val_acc2 = mp.Value('d', 0.0)
-
-p1 = mp.Process(target=train_and_log, args=(model1, x_train, y_train, x_val, y_val, "model_1"))
-p2 = mp.Process(target=train_and_log, args=(model2, x_train, y_train, x_val, y_val, "model_2"))
-
-p1.start()
-p2.start()
-
-p1.join()
-p2.join()
-
-val_loss1 = out_val_loss1.value
-val_acc1 = out_val_acc1.value
-val_loss2 = out_val_loss2.value
-val_acc2 = out_val_acc2.value
+print("\033[35m", "Saving metrics...", "\033[0m")
 
 # Save metrics to a CSV file
 metrics = pd.DataFrame({
