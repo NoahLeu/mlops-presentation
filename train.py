@@ -98,7 +98,7 @@ runs = [
   (1, model1, x_train, y_train, 5, 50, x_val, y_val, out_val_loss1, out_val_acc1),
   (2, model2, x_train, y_train, 5, 50, x_val, y_val, out_val_loss2, out_val_acc2)
 ]
-pool.map(lambda run:train_model(run), runs)
+pool.map(lambda args: train_model(*args), runs)
 
 
 # # train and evaluate models in parallel
