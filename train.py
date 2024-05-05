@@ -4,16 +4,13 @@ import dagshub
 import mlflow
 import mlflow.tensorflow
 import os
-# import dvc.api
 from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay
 from sklearn.model_selection import train_test_split
 import matplotlib.pyplot as plt
 import pandas as pd
 import multiprocessing as mp
 import json
-from return_thread import ReturnValueThread
-from mlflow.tracking import MlflowClient
-from multiprocessing.pool import ThreadPool
+import multiprocessing as mp
 
 print(
   "\033[35m",
@@ -62,55 +59,43 @@ model2 = tf.keras.Sequential([
   tf.keras.layers.Dense(10, activation='softmax')
 ])
 
-# Compile model
-model1.compile(optimizer='adam',
-              loss='sparse_categorical_crossentropy',
-              metrics=['accuracy'])
-model2.compile(optimizer='adam',
-              loss='sparse_categorical_crossentropy',
-              metrics=['accuracy'])
 
-print("\033[35m", "Training model...", "\033[0m")
+def train_and_log(model, x_train, y_train, x_val, y_val, experiment_name):
+    mlflow.set_experiment(experiment_name)
+    with mlflow.start_run():
+        # Train the model here and log metrics with MLflow
+        model.compile(optimizer='adam', loss='sparse_categorical_crossentropy', metrics=['accuracy'])
+        history = model.fit(x_train, y_train, epochs=5, validation_data=(x_val, y_val))
 
-# Define a function to train a model
-def train_model(id, model, x_train, y_train, epochs, batch_size, x_val, y_val, out_val_loss, out_val_acc):
-  run = client.create_run(experiment.experiment_id)
-  # with mlflow.start_run(nested=True, run_name="train_model_" + str(id)):
-  with mlflow.run(run_id=run.info.run_id):
-    model.fit(x_train, y_train, epochs=epochs, batch_size=batch_size, validation_split=0.2)
-    val_loss, val_acc = model.evaluate(x_val, y_val)
+        # Log metrics with mlflow
+        for epoch in range(len(history.history['accuracy'])):
+            mlflow.log_metric('accuracy', history.history['accuracy'][epoch], step=epoch)
+            mlflow.log_metric('val_accuracy', history.history['val_accuracy'][epoch], step=epoch)
+            mlflow.log_metric('loss', history.history['loss'][epoch], step=epoch)
+            mlflow.log_metric('val_loss', history.history['val_loss'][epoch], step=epoch)
 
-    out_val_loss.value = val_loss
-    out_val_acc.value = val_acc
-    # return val_loss, val_acc
+        # save evaluation metrics
+        val_loss, val_acc = model.evaluate(x_val, y_val)
+        if experiment_name == "model_1":
+            out_val_loss1.value = val_loss
+            out_val_acc1.value = val_acc
+        else:
+            out_val_loss2.value = val_loss
+            out_val_acc2.value = val_acc
 
 out_val_loss1 = mp.Value('d', 0.0)
 out_val_acc1 = mp.Value('d', 0.0)
 out_val_loss2 = mp.Value('d', 0.0)
 out_val_acc2 = mp.Value('d', 0.0)
 
-client = MlflowClient()
+p1 = mp.Process(target=train_and_log, args=(model1, x_train, y_train, x_val, y_val, "model_1"))
+p2 = mp.Process(target=train_and_log, args=(model2, x_train, y_train, x_val, y_val, "model_2"))
 
-new_experiment = mlflow.create_experiment("MNIST")
-experiment = mlflow.get_experiment_by_name(name='/path/to/new/experiment')
-pool = ThreadPool(processes = 2)
-runs = [
-  (1, model1, x_train, y_train, 5, 50, x_val, y_val, out_val_loss1, out_val_acc1),
-  (2, model2, x_train, y_train, 5, 50, x_val, y_val, out_val_loss2, out_val_acc2)
-]
-pool.map(lambda args: train_model(*args), runs)
+p1.start()
+p2.start()
 
-
-# # train and evaluate models in parallel
-# thread1 = ReturnValueThread(target=train_model, args=(1, model1, x_train, y_train, 5, 50, x_val, y_val, out_val_loss1, out_val_acc1))
-# thread2 = ReturnValueThread(target=train_model, args=(2, model2, x_train, y_train, 5, 50, x_val, y_val, out_val_loss2, out_val_acc2))
-# threads = [thread1, thread2]
-
-# for thread in threads:
-#   thread.start()
-
-# for thread in threads:
-#   thread.join()
+p1.join()
+p2.join()
 
 val_loss1 = out_val_loss1.value
 val_acc1 = out_val_acc1.value
