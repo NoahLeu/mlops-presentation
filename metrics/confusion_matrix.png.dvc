@@ -1,5 +1,0 @@
-outs:
-- md5: a34d246325a33e9a3d9c26bd0ead88aa
-  size: 42685
-  hash: md5
-  path: confusion_matrix.png
