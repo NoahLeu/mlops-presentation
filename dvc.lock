@@ -14,13 +14,13 @@ stages:
     outs:
     - path: metrics/metrics.csv
       hash: md5
-      md5: e66909721aa0adbf672f0b4f887164f4
-      size: 115
+      md5: 18b11b7cfa0d7e6a75842b79745f062c
+      size: 114
     - path: metrics/metrics.json
       hash: md5
-      md5: a96e30bd67309f0b97847f255b9dece2
+      md5: cadaffaee572dcdcae66ce466cabd078
       size: 61
     - path: model.h5
       hash: md5
-      md5: 5fb9c356a4bd921bf137bb394d76269c
+      md5: 778ac9d562f16d35fec657934fbe2d12
       size: 1244464
