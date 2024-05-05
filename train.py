@@ -147,6 +147,15 @@ mlflow.log_artifact(
   "confusion_matrix.png"
 )
 
+# Log metrics metrics.json
+metrics = {
+    "accuracy": val_acc1,
+    "loss": val_loss1
+}
+
+with open("metrics/metrics.json", "w") as f:
+    json.dump(metrics, f)
+
 print("\033[35m", "Logging model to MLflow...", "\033[0m")
 # Save model in MLflow format
 mlflow.tensorflow.log_model(best_model, "model")
