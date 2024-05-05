@@ -11,6 +11,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import tempfile
 import threading
+from multiprocessing.pool import ThreadPool
 import json
 from dvclive import Live
 
@@ -51,8 +52,8 @@ print("\033[35m", "Building model...", "\033[0m")
 # Define model (very simple minimal example)
 model1 = tf.keras.Sequential([
   tf.keras.layers.Flatten(input_shape=(28, 28)),
-  tf.keras.layers.Dense(128, activation='relu'),
-  tf.keras.layers.Dense(10, activation='softmax')
+  tf.keras.layers.Dense(128, activation='softmax'),
+  tf.keras.layers.Dense(10, activation='relu')
 ])
 
 model2 = tf.keras.Sequential([
@@ -72,22 +73,22 @@ model2.compile(optimizer='adam',
 print("\033[35m", "Training model...", "\033[0m")
 
 # Define a function to train a model
-def train_model(model, x_train, y_train, epochs, batch_size):
+def train_model(model, x_train, y_train, epochs, batch_size, x_val, y_val):
   model.fit(x_train, y_train, epochs=epochs, batch_size=batch_size, validation_split=0.2)
+  val_loss, val_acc = model.evaluate(x_val, y_val)
+  return val_loss, val_acc
+
+thread_pool = ThreadPool(processes=2)
 
 # train and evaluate models in parallel
 with mlflow.start_run(nested=True) as child_run1:
-  thread1 = threading.Thread(target=train_model, args=(model1, x_train, y_train, 5, 50))
-  thread1.start()
-  thread1.join()
-  val_loss1, val_acc1 = model1.evaluate(x_val, y_val)
+  async_result1 = thread_pool.apply_async(train_model, (model1, x_train, y_train, 5, 50, x_val, y_val))
 
 with mlflow.start_run(nested=True) as child_run2:
-  thread2 = threading.Thread(target=train_model, args=(model2, x_train, y_train, 5, 50))
-  thread2.start()
-  thread2.join()
-  val_loss2, val_acc2 = model2.evaluate(x_val, y_val)
+  async_result2 = thread_pool.apply_async(train_model, (model2, x_train, y_train, 5, 50, x_val, y_val))
 
+val_loss1, val_acc1 = async_result1.get()
+val_loss2, val_acc2 = async_result2.get()
 
 # Save metrics to a CSV file
 metrics = pd.DataFrame({
