@@ -74,15 +74,21 @@ model2.compile(optimizer='adam',
 print("\033[35m", "Training model...", "\033[0m")
 
 # Define a function to train a model
-def train_model(model, x_train, y_train, epochs, batch_size, x_val, y_val):
-  with mlflow.start_run(nested=True):
+def train_model_1(model, x_train, y_train, epochs, batch_size, x_val, y_val):
+  with mlflow.start_run(nested=True) as child_run_1:
+    model.fit(x_train, y_train, epochs=epochs, batch_size=batch_size, validation_split=0.2)
+    val_loss, val_acc = model.evaluate(x_val, y_val)
+    return val_loss, val_acc
+
+def train_model_2(model, x_train, y_train, epochs, batch_size, x_val, y_val):
+  with mlflow.start_run(nested=True) as child_run_2:
     model.fit(x_train, y_train, epochs=epochs, batch_size=batch_size, validation_split=0.2)
     val_loss, val_acc = model.evaluate(x_val, y_val)
     return val_loss, val_acc
 
 # train and evaluate models in parallel
-thread1 = ReturnValueThread(target=train_model, args=(model1, x_train, y_train, 5, 50, x_val, y_val))
-thread2 = ReturnValueThread(target=train_model, args=(model2, x_train, y_train, 5, 50, x_val, y_val))
+thread1 = ReturnValueThread(target=train_model_1, args=(model1, x_train, y_train, 5, 50, x_val, y_val))
+thread2 = ReturnValueThread(target=train_model_2, args=(model2, x_train, y_train, 5, 50, x_val, y_val))
 threads = [thread1, thread2]
 
 for thread in threads:
