@@ -14,6 +14,7 @@ import threading
 from multiprocessing.pool import ThreadPool
 import json
 from dvclive import Live
+from return_thread import ReturnValueThread
 
 print(
   "\033[35m",
@@ -79,14 +80,16 @@ def train_model(model, x_train, y_train, epochs, batch_size, x_val, y_val):
     val_loss, val_acc = model.evaluate(x_val, y_val)
     return val_loss, val_acc
 
-thread_pool = ThreadPool(processes=2)
-
 # train and evaluate models in parallel
-async_result1 = thread_pool.apply_async(train_model, (model1, x_train, y_train, 5, 50, x_val, y_val))
-async_result2 = thread_pool.apply_async(train_model, (model2, x_train, y_train, 5, 50, x_val, y_val))
+thread1 = ReturnValueThread(target=train_model, args=(model1, x_train, y_train, 5, 50, x_val, y_val))
+thread2 = ReturnValueThread(target=train_model, args=(model2, x_train, y_train, 5, 50, x_val, y_val))
+threads = [thread1, thread2]
 
-val_loss1, val_acc1 = async_result1.get()
-val_loss2, val_acc2 = async_result2.get()
+for thread in threads:
+  thread.start()
+
+val_loss1, val_acc1 = thread1.join()
+val_loss2, val_acc2 = thread2.join()
 
 # Save metrics to a CSV file
 metrics = pd.DataFrame({
