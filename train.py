@@ -73,21 +73,21 @@ print("\033[35m", "Training model...", "\033[0m")
 
 # Define a function to train a model
 def train_model(model, x_train, y_train, epochs, batch_size):
-    model.fit(x_train, y_train, epochs=epochs, batch_size=batch_size, validation_split=0.2)
+  model.fit(x_train, y_train, epochs=epochs, batch_size=batch_size, validation_split=0.2)
 
-# Train both models in parallel
-thread1 = threading.Thread(target=train_model, args=(model1, x_train, y_train, 5, 50))
-thread2 = threading.Thread(target=train_model, args=(model2, x_train, y_train, 5, 50))
+# train and evaluate models in parallel
+with mlflow.start_run(nested=True) as child_run1:
+  thread1 = threading.Thread(target=train_model, args=(model1, x_train, y_train, 5, 50))
+  thread1.start()
+  thread1.join()
+  val_loss1, val_acc1 = model1.evaluate(x_val, y_val)
 
-thread1.start()
-thread2.start()
+with mlflow.start_run(nested=True) as child_run2:
+  thread2 = threading.Thread(target=train_model, args=(model2, x_train, y_train, 5, 50))
+  thread2.start()
+  thread2.join()
+  val_loss2, val_acc2 = model2.evaluate(x_val, y_val)
 
-thread1.join()
-thread2.join()
-
-# Evaluate both models
-val_loss1, val_acc1 = model1.evaluate(x_val, y_val)
-val_loss2, val_acc2 = model2.evaluate(x_val, y_val)
 
 # Save metrics to a CSV file
 metrics = pd.DataFrame({
