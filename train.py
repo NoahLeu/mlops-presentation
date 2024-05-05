@@ -74,18 +74,16 @@ print("\033[35m", "Training model...", "\033[0m")
 
 # Define a function to train a model
 def train_model(model, x_train, y_train, epochs, batch_size, x_val, y_val):
-  model.fit(x_train, y_train, epochs=epochs, batch_size=batch_size, validation_split=0.2)
-  val_loss, val_acc = model.evaluate(x_val, y_val)
-  return val_loss, val_acc
+  with mlflow.start_run(nested=True):
+    model.fit(x_train, y_train, epochs=epochs, batch_size=batch_size, validation_split=0.2)
+    val_loss, val_acc = model.evaluate(x_val, y_val)
+    return val_loss, val_acc
 
 thread_pool = ThreadPool(processes=2)
 
 # train and evaluate models in parallel
-with mlflow.start_run(nested=True) as child_run1:
-  async_result1 = thread_pool.apply_async(train_model, (model1, x_train, y_train, 5, 50, x_val, y_val))
-
-with mlflow.start_run(nested=True) as child_run2:
-  async_result2 = thread_pool.apply_async(train_model, (model2, x_train, y_train, 5, 50, x_val, y_val))
+async_result1 = thread_pool.apply_async(train_model, (model1, x_train, y_train, 5, 50, x_val, y_val))
+async_result2 = thread_pool.apply_async(train_model, (model2, x_train, y_train, 5, 50, x_val, y_val))
 
 val_loss1, val_acc1 = async_result1.get()
 val_loss2, val_acc2 = async_result2.get()
