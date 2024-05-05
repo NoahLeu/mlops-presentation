@@ -74,7 +74,7 @@ print("\033[35m", "Training model...", "\033[0m")
 
 # Define a function to train a model
 def train_model(id, model, x_train, y_train, epochs, batch_size, x_val, y_val, out_val_loss, out_val_acc):
-  with mlflow.start_run(nested=True, run_name="Training Model " + id):
+  with mlflow.start_run(nested=True, run_name="train_model_" + str(id)):
     model.fit(x_train, y_train, epochs=epochs, batch_size=batch_size, validation_split=0.2)
     val_loss, val_acc = model.evaluate(x_val, y_val)
 
