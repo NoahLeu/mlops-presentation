@@ -78,11 +78,17 @@ with mlflow.start_run(nested=True, run_name="model_1") as child_run_1:
   print ("\033[35m", "Evaluating model 1...", "\033[0m")
   val_loss1, val_acc1 = model1.evaluate(x_val, y_val)
 
+run_info = mlflow.get_run(child_run_1.info.run_id)
+assert run_info.info.status == "FINISHED"
+
 with mlflow.start_run(nested=True, run_name="model_2") as child_run_2:
   print ("\033[35m", "Training model 2...", "\033[0m")
   model2.fit(x_train, y_train, epochs=3, validation_data=(x_val, y_val))
   print ("\033[35m", "Evaluating model 2...", "\033[0m")
   val_loss2, val_acc2 = model2.evaluate(x_val, y_val)
+
+run_info = mlflow.get_run(child_run_2.info.run_id)
+assert run_info.info.status == "FINISHED"
 
 print("\033[35m", "Saving metrics...", "\033[0m")
 
