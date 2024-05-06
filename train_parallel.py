@@ -18,8 +18,7 @@ def train_and_log(model, run_name, x_train, y_train, x_val, y_val):
         "val_acc": history.history['val_accuracy'][epoch]
       }
 
-      mlflow.log_metrics(epoch_metrics, step=epoch)
-
+      mlflow.log_metrics(epoch_metrics, step=epoch, run_id=run.info.run_id)
 
     final_metrics = {
       "accuracy": val_acc,
