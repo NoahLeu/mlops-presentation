@@ -27,9 +27,6 @@ def train_and_log(model, run_name, x_train, y_train, x_val, y_val):
 
     mlflow.log_metrics(final_metrics, run_id=run.info.run_id)
 
-    # Save model in MLflow format
-    # mlflow.tensorflow.log_model(model, "model")
-
     return final_metrics
 
 def main(models, x_train, y_train, x_val, y_val):

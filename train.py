@@ -96,7 +96,7 @@ def main():
 
   # Select the best model
   best_model = model1 if val_acc1 > val_acc2 else model2
-  best_model_name = "model1" if val_acc1 > val_acc2 else "model2"
+  best_model_name = "model_1" if val_acc1 > val_acc2 else "model_2"
 
   print("\033[35m", "Best model: " + best_model_name, "\033[0m")
 
