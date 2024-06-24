@@ -78,8 +78,8 @@ To run the training script and see all elements in action, follow these steps:
 
 - `DAGSHUB_ACCESS_TOKEN`: Access token for DagsHub.
 - `MLFLOW_TRACKING_PASSWORD`: Password for MLflow tracking server (on DagsHub).
-- `GIT_EMAIL`: Email for git (used for pushing changes to model and metrics automatically).
-- `GIT_NAME`: Name for git (used for pushing changes to model and metrics automatically).
+- `GIT_EMAIL`: Email for git (used for pushing changes to model and metrics meta files automatically).
+- `GIT_NAME`: Name for git (used for pushing changes to model and metrics meta files automatically).
 - `REPO_TOKEN`: Token for GitHub Actions to push changes to the repository.
 
 After adding the secrets, you can create a new branch, make some changes, and open a PR to see the CI in action.
