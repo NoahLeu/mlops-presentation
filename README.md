@@ -68,7 +68,7 @@ The project structure is as follows (including only the relevant files and direc
 Currently this repository is set up to run the training script using GitHub Action Secrets as environment variables.
 This is due to showing the use of GitHub Actions and CML for PR review. Also a good practice for mlops is to run the training on external resources like a cloud provider which is (in a minimal way) simulated here using GitHub Actions Resources.
 
-To run the training script and see all elements in action, follow these steps:
+To run the training script yourself and see all elements in action, follow these steps:
 
 1. Fork this repository.
 2. Create a linked project on DagsHub for the same repository.
@@ -83,6 +83,8 @@ To run the training script and see all elements in action, follow these steps:
 - `REPO_TOKEN`: Token for GitHub Actions to push changes to the repository.
 
 After adding the secrets, you can create a new branch, make some changes, and open a PR to see the CI in action.
+
+To showcase the PR review process an example PR has been created [here](https://github.com/NoahLeu/mlops-presentation/pull/38)
 
 # Contributors
 
