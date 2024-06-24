@@ -2,7 +2,7 @@ name: CML & DVC
 on:
   push:
     branches:
-      - '**'
+      - master
   pull_request:
     branches:
       - '**'
